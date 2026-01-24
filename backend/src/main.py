@@ -55,7 +55,9 @@ app = FastAPI(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=SESSION_SECRET_KEY
+    secret_key=SESSION_SECRET_KEY,
+    same_site="none",  # Required for cross-domain OAuth (Vercel frontend, Render backend)
+    https_only=True,   # Required when same_site="none"
 )
 
 
