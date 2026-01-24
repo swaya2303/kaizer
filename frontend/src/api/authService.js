@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { apiWithCookies, apiWithoutCookies } from './baseApi';
 
-const API_URL = '/api';
+// Use VITE_API_URL for OAuth redirects (must go to actual backend, not Vercel)
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 class AuthService {
   async login(username, password) {
@@ -60,20 +61,17 @@ class AuthService {
     }
   }
 
-  // New method for Google OAuth
+  // OAuth redirects - use full backend URL for production
   redirectToGoogleOAuth() {
-    // The backend URL that initiates the Google OAuth flow
-    window.location.href = `/api/auth/login/google`;
+    window.location.href = `${API_URL}/auth/login/google`;
   }
 
   redirectToGithubOAuth() {
-    // The backend URL that initiates the Google OAuth flow
-    window.location.href = `/api/auth/login/github`;
+    window.location.href = `${API_URL}/auth/login/github`;
   }
 
   redirectToDiscordOAuth() {
-    // The backend URL that initiates the Discord OAuth flow
-    window.location.href = `/api/auth/login/discord`;
+    window.location.href = `${API_URL}/auth/login/discord`;
   }
 }
 
