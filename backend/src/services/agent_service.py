@@ -55,17 +55,59 @@ class AgentService:
         self.state_manager = StateService()
         self.query_service = QueryService(self.state_manager)
         
-        # define agents
-        self.info_agent = InfoAgent(self.app_name, self.session_service)
-        self.planner_agent = PlannerAgent(self.app_name, self.session_service)
-        self.coding_agent = ExplainerAgent(self.app_name, self.session_service)
-        self.tester_agent = TesterAgent(self.app_name, self.session_service)
-        self.image_agent = ImageAgent(self.app_name, self.session_service)
-        self.grader_agent = GraderAgent(self.app_name, self.session_service)
+        # Initialize lazy-loaded agents as None
+        self._info_agent = None
+        self._planner_agent = None
+        self._coding_agent = None
+        self._tester_agent = None
+        self._image_agent = None
+        self._grader_agent = None
 
-        # define Rag service
+        # define Rag service (always needed)
         self.vector_service = vector_service.VectorService()
         self.contentService = CourseContentService()
+
+    @property
+    def info_agent(self):
+        """Lazy-load InfoAgent only when first accessed"""
+        if self._info_agent is None:
+            self._info_agent = InfoAgent(self.app_name, self.session_service)
+        return self._info_agent
+
+    @property
+    def planner_agent(self):
+        """Lazy-load PlannerAgent only when first accessed"""
+        if self._planner_agent is None:
+            self._planner_agent = PlannerAgent(self.app_name, self.session_service)
+        return self._planner_agent
+
+    @property
+    def coding_agent(self):
+        """Lazy-load ExplainerAgent only when first accessed - DEFERS LITELLM IMPORT"""
+        if self._coding_agent is None:
+            self._coding_agent = ExplainerAgent(self.app_name, self.session_service)
+        return self._coding_agent
+
+    @property
+    def tester_agent(self):
+        """Lazy-load TesterAgent only when first accessed"""
+        if self._tester_agent is None:
+            self._tester_agent = TesterAgent(self.app_name, self.session_service)
+        return self._tester_agent
+
+    @property
+    def image_agent(self):
+        """Lazy-load ImageAgent only when first accessed"""
+        if self._image_agent is None:
+            self._image_agent = ImageAgent(self.app_name, self.session_service)
+        return self._image_agent
+
+    @property
+    def grader_agent(self):
+        """Lazy-load GraderAgent only when first accessed"""
+        if self._grader_agent is None:
+            self._grader_agent = GraderAgent(self.app_name, self.session_service)
+        return self._grader_agent
 
 
     @staticmethod
