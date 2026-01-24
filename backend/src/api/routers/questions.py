@@ -9,7 +9,7 @@ from ...db.models.db_course import Chapter, PracticeQuestion
 from ...db.models.db_user import User
 from ...utils.auth import get_current_active_user
 from ...services.course_service import verify_course_ownership
-from .courses import agent_service
+from .courses import get_agent_service  # Use lazy getter
 
 
 
@@ -131,7 +131,7 @@ async def get_feedback(
                 .first())
 
     # Get feedback from grader
-    points, feedback = await agent_service.grade_question(
+    points, feedback = await get_agent_service().grade_question(
         user_id=current_user.id,
         course_id=course_id,
         question=question.question,

@@ -8,7 +8,8 @@ from typing import List
 from logging import getLogger
 
 
-from google.adk.sessions import InMemorySessionService
+# MOVED: google.adk imports moved inside AgentService.__init__ to prevent blocking litellm import
+# from google.adk.sessions import InMemorySessionService
 
 from ..services import vector_service
 from ..services.course_content_service import CourseContentService
@@ -21,7 +22,8 @@ from .state_service import StateService, CourseState
 from ..db.crud import chapters_crud, documents_crud, images_crud, questions_crud, courses_crud
 
 
-from google.adk.sessions import InMemorySessionService
+# REMOVED: Duplicate import
+# from google.adk.sessions import InMemorySessionService
 
 # REMOVED: Agent imports moved inside lazy properties
 # from ..agents.planner_agent import PlannerAgent
@@ -48,6 +50,8 @@ logger = getLogger(__name__)
 
 class AgentService:
     def __init__(self):
+        # Import google.adk here to defer loading until first AgentService instantiation
+        from google.adk.sessions import InMemorySessionService
         
         # session
         self.session_service = InMemorySessionService()

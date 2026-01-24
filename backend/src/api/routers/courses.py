@@ -6,7 +6,8 @@ from typing import List, Optional
 
 from ...db.models.db_course import Chapter, Course, CourseStatus
 from ...db.models.db_user import User
-from ...services.agent_service import AgentService
+# REMOVED: AgentService import moved inside lazy getter to prevent blocking google.adk imports
+# from ...services.agent_service import AgentService
 from ...utils.auth import get_current_active_user
 from ...db.database import get_db, get_db_context, SessionLocal
 from ...db.crud import courses_crud, chapters_crud, users_crud, usage_crud
@@ -30,7 +31,17 @@ router = APIRouter(
     tags=["courses"],
     responses={404: {"description": "Not found"}},
 )
-agent_service = AgentService()
+
+# Lazy AgentService singleton to prevent google.adk/litellm from loading at startup
+_agent_service = None
+
+def get_agent_service():
+    """Get or create the AgentService singleton lazily"""
+    global _agent_service
+    if _agent_service is None:
+        from ...services.agent_service import AgentService
+        _agent_service = AgentService()
+    return _agent_service
 
 
 
@@ -105,7 +116,7 @@ async def create_course_request(
         # Add the long-running course creation to background tasks
         # The agent_service.create_course will need to be modified to accept ws_manager and task_id
         background_tasks.add_task(
-            agent_service.create_course,
+            get_agent_service().create_course,
                             user_id=str(current_user.id),
                             course_id=course.id,
                             request=course_request,
