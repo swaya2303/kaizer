@@ -8,23 +8,26 @@ from ..schemas.flashcard import (
     GenerateResponse, TaskStatusResponse, TaskActionResponse,
     FlashcardConfigRequest, MultipleChoicePreview, LearningCardPreview
 )
-from ...services.flashcard_service import FlashcardService
+# MOVED: FlashcardService and google.adk imports moved inside lazy getter to prevent blocking
+# from ...services.flashcard_service import FlashcardService
 from ...agents.flashcard_agent.schema import FlashcardConfig, FlashcardType
 from ...utils.auth import get_current_active_user
 from ...db.models.db_user import User
-from google.adk.sessions import InMemorySessionService
+# from google.adk.sessions import InMemorySessionService  # MOVED inside lazy getter
 
 router = APIRouter(prefix="/anki", tags=["flashcard"])
 
-# Global service instance - in a real app, this would be dependency injected
-flashcard_service: Optional[FlashcardService] = None
+# Global service instance - lazy loaded to avoid blocking imports
+flashcard_service = None
 
 
-def get_flashcard_service() -> FlashcardService:
-    """Get the flashcard service instance."""
+def get_flashcard_service():
+    """Get the flashcard service instance - lazy loaded to avoid blocking google.adk imports."""
     global flashcard_service
     if flashcard_service is None:
-        # Initialize with proper session service like other agents
+        # Import here to avoid loading google.adk at module import time
+        from google.adk.sessions import InMemorySessionService
+        from ...services.flashcard_service import FlashcardService
         session_service = InMemorySessionService()
         flashcard_service = FlashcardService("nexora", session_service)
     return flashcard_service
@@ -34,7 +37,7 @@ def get_flashcard_service() -> FlashcardService:
 async def upload_pdf(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Upload a PDF file for flashcard generation."""
     
@@ -58,7 +61,7 @@ async def upload_pdf(
 async def analyze_pdf(
     request: AnalyzeRequest,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Analyze a PDF and provide generation preview."""
     
@@ -105,7 +108,7 @@ async def analyze_pdf(
 async def generate_flashcards(
     request: GenerateRequest,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Start flashcard generation process."""
     
@@ -130,7 +133,7 @@ async def generate_flashcards(
 async def get_task_status(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Get the status of a flashcard generation task."""
     
@@ -159,7 +162,7 @@ async def get_task_status(
 async def download_flashcards(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Download the generated flashcard deck."""
     
@@ -178,7 +181,7 @@ async def download_flashcards(
 async def cancel_task(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Cancel a running flashcard generation task."""
     
@@ -197,7 +200,7 @@ async def cancel_task(
 async def retry_task(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Retry a failed flashcard generation task."""
     
@@ -216,7 +219,7 @@ async def retry_task(
 async def get_processing_history(
     limit: int = 10,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Get user's processing history."""
     return service.get_processing_history(current_user.id, limit)
@@ -253,7 +256,7 @@ async def validate_pdf(
 @router.get("/stats")
 async def get_user_stats(
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Get processing statistics for the user."""
     return service.get_user_stats(current_user.id)
@@ -263,7 +266,7 @@ async def get_user_stats(
 async def get_task_details(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Get detailed information about a completed task."""
     details = service.get_task_details(task_id)
@@ -276,7 +279,7 @@ async def get_task_details(
 async def delete_task(
     task_id: str,
     current_user: User = Depends(get_current_active_user),
-    service: FlashcardService = Depends(get_flashcard_service)
+    service = Depends(get_flashcard_service)
 ):
     """Delete a processing task and its files."""
     success = service.delete_task(task_id)

@@ -157,6 +157,15 @@ class ChatService:
                 detail="An error occurred while processing your message"
             ) from e
         
+# Lazy singleton - don't create at module level to avoid blocking imports
+_chat_service = None
 
+def get_chat_service():
+    """Get or create the ChatService singleton lazily to avoid blocking imports"""
+    global _chat_service
+    if _chat_service is None:
+        _chat_service = ChatService()
+    return _chat_service
 
-chat_service = ChatService()
+# REMOVED: This was creating ChatService at module import time, blocking server startup
+# chat_service = ChatService()

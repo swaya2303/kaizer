@@ -13,7 +13,7 @@ from ...db.database import get_db_context
 
 from ...utils.auth import get_current_active_user
 from ..schemas.chat import ChatRequest, ChatResponse
-from ...services.chat_service import chat_service
+from ...services.chat_service import get_chat_service  # Use lazy getter
 from ...db.crud import chapters_crud
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ async def chat_with_agent(
                 
         # Process the chat message and return a streaming response
         return StreamingResponse(
-            chat_service.process_chat_message(
+            get_chat_service().process_chat_message(
                 user_id=str(current_user.id),
                 chapter_id=chapter_id,
                 request=chat_request,
