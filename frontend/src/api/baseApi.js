@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = '/api';
+// Use VITE_API_URL environment variable for production (Render backend)
+// Falls back to '/api' for local development with Vite proxy
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 
 // --- Instanz mit Cookies (für Auth) ---
@@ -60,8 +62,8 @@ apiWithCookies.interceptors.response.use(
         return apiWithCookies(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        if (typeof window !== 'undefined' && 
-            window.location.pathname !== '/auth/login') {
+        if (typeof window !== 'undefined' &&
+          window.location.pathname !== '/auth/login') {
           window.location.href = '/auth/login';
         }
         return Promise.reject(refreshError);
