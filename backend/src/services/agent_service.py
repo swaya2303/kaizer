@@ -15,19 +15,19 @@ from ..services.course_content_service import CourseContentService
 
 from .query_service import QueryService
 from .state_service import StateService, CourseState
-from ..agents.explainer_agent.agent import ExplainerAgent
-from ..agents.grader_agent.agent import GraderAgent
+# REMOVED: Agent imports moved inside lazy properties to prevent blocking litellm import
+# from ..agents.explainer_agent.agent import ExplainerAgent
+# from ..agents.grader_agent.agent import GraderAgent
 from ..db.crud import chapters_crud, documents_crud, images_crud, questions_crud, courses_crud
 
 
 from google.adk.sessions import InMemorySessionService
 
-from ..agents.planner_agent import PlannerAgent
-from ..agents.info_agent.agent import InfoAgent
-
-from ..agents.image_agent.agent import ImageAgent
-
-from ..agents.tester_agent import TesterAgent
+# REMOVED: Agent imports moved inside lazy properties
+# from ..agents.planner_agent import PlannerAgent
+# from ..agents.info_agent.agent import InfoAgent
+# from ..agents.image_agent.agent import ImageAgent
+# from ..agents.tester_agent import TesterAgent
 from ..agents.utils import create_text_query
 from ..db.models.db_course import CourseStatus
 from ..api.schemas.course import CourseRequest
@@ -71,6 +71,7 @@ class AgentService:
     def info_agent(self):
         """Lazy-load InfoAgent only when first accessed"""
         if self._info_agent is None:
+            from ..agents.info_agent.agent import InfoAgent
             self._info_agent = InfoAgent(self.app_name, self.session_service)
         return self._info_agent
 
@@ -78,6 +79,7 @@ class AgentService:
     def planner_agent(self):
         """Lazy-load PlannerAgent only when first accessed"""
         if self._planner_agent is None:
+            from ..agents.planner_agent import PlannerAgent
             self._planner_agent = PlannerAgent(self.app_name, self.session_service)
         return self._planner_agent
 
@@ -85,6 +87,7 @@ class AgentService:
     def coding_agent(self):
         """Lazy-load ExplainerAgent only when first accessed - DEFERS LITELLM IMPORT"""
         if self._coding_agent is None:
+            from ..agents.explainer_agent.agent import ExplainerAgent
             self._coding_agent = ExplainerAgent(self.app_name, self.session_service)
         return self._coding_agent
 
@@ -92,6 +95,7 @@ class AgentService:
     def tester_agent(self):
         """Lazy-load TesterAgent only when first accessed"""
         if self._tester_agent is None:
+            from ..agents.tester_agent import TesterAgent
             self._tester_agent = TesterAgent(self.app_name, self.session_service)
         return self._tester_agent
 
@@ -99,6 +103,7 @@ class AgentService:
     def image_agent(self):
         """Lazy-load ImageAgent only when first accessed"""
         if self._image_agent is None:
+            from ..agents.image_agent.agent import ImageAgent
             self._image_agent = ImageAgent(self.app_name, self.session_service)
         return self._image_agent
 
@@ -106,6 +111,7 @@ class AgentService:
     def grader_agent(self):
         """Lazy-load GraderAgent only when first accessed"""
         if self._grader_agent is None:
+            from ..agents.grader_agent.agent import GraderAgent
             self._grader_agent = GraderAgent(self.app_name, self.session_service)
         return self._grader_agent
 
