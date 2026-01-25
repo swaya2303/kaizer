@@ -86,8 +86,8 @@ def set_access_cookie(response : Response, access_token: str):
         value=access_token,
         path="/",  # send to all paths
         httponly=True,
-        secure=settings.SECURE_COOKIE,  # use secure cookies if configured
-        samesite="lax" #settings.SAME_SITE,  # use configured SameSite policy
+        secure=True,  # Must be True when samesite="none"
+        samesite="none"  # Required for cross-domain (Vercel frontend, Render backend)
     )
 
 
@@ -98,8 +98,8 @@ def set_refresh_cookie(response : Response, refresh_token: str):
         value=refresh_token,
         path="/api/auth/refresh",  # restrict refresh token cookie to this path
         httponly=True,
-        secure=settings.SECURE_COOKIE,  # use secure cookies if configured
-        samesite= "lax" #settings.SAME_SITE,  # use configured SameSite policy
+        secure=True,  # Must be True when samesite="none"
+        samesite="none"  # Required for cross-domain (Vercel frontend, Render backend)
     )
 
 
