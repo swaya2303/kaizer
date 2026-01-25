@@ -70,15 +70,16 @@ origins = [
     "http://localhost:5173",  # Vite dev server
     "http://localhost:8000",
     frontend_url,  # Production frontend URL from env
-    "https://*.vercel.app",  # Allow all Vercel preview deployments
+    "https://kaizer-zeta.vercel.app",  # Explicit Vercel URL
 ]
 
-# Remove None values and add wildcard support
+# Remove None values
 origins = [origin for origin in origins if origin]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # CANNOT use ["*"] with allow_credentials=True
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview deployments
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
