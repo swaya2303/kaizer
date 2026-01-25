@@ -85,18 +85,26 @@ async def create_course_request(
     
 
     
+    print(f"DEBUG: Starting create_course_request for user: {current_user.id}")
     with get_db_context() as db:
+        print("DEBUG: Database session obtained")
         # Create empty course in the database
-        course = courses_crud.create_new_course(
-            db=db,
-            user_id=str(current_user.id),
-            total_time_hours=course_request.time_hours,
-            query_=course_request.query,
-            language=course_request.language,
-            difficulty=course_request.difficulty,
-            status=CourseStatus.CREATING  # Set initial status to CREATING
-        
-        )
+        try:
+            course = courses_crud.create_new_course(
+                db=db,
+                user_id=str(current_user.id),
+                total_time_hours=course_request.time_hours,
+                query_=course_request.query,
+                language=course_request.language,
+                difficulty=course_request.difficulty,
+                status=CourseStatus.CREATING  # Set initial status to CREATING
+            )
+            print(f"DEBUG: Course created successfully with ID: {course.id}")
+        except Exception as e:
+            print(f"ERROR: Failed to create course in DB: {e}")
+            import traceback
+            traceback.print_exc()
+            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
         if not course:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
