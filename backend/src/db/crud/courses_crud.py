@@ -46,13 +46,16 @@ def create_new_course(db: Session, user_id: str, total_time_hours: int, query_: 
     # Convert enum to string if needed
     status_value = status.value if isinstance(status, CourseStatus) else status
     
+    # Ensure types are correct for DB
+    total_time_hours = int(total_time_hours)
+    
     db_course = Course(
-        user_id=user_id,
+        user_id=str(user_id),
         total_time_hours=total_time_hours,
-        query=query_,
-        status=status_value,
-        language=language,
-        difficulty=difficulty
+        query=str(query_),
+        status=str(status_value),
+        language=str(language),
+        difficulty=str(difficulty)
     )
 
     db.add(db_course)
