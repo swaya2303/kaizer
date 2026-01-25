@@ -43,11 +43,14 @@ def create_new_course(db: Session, user_id: str, total_time_hours: int, query_: 
                       language: str = "en", difficulty: str = "advanced",
                       status: CourseStatus = CourseStatus.CREATING) -> Course:
     """Create a new course"""
+    # Convert enum to string if needed
+    status_value = status.value if isinstance(status, CourseStatus) else status
+    
     db_course = Course(
         user_id=user_id,
         total_time_hours=total_time_hours,
         query=query_,
-        status=status,
+        status=status_value,
         language=language,
         difficulty=difficulty
     )
@@ -64,6 +67,9 @@ def update_course(db: Session, course_id: int, **kwargs) -> Optional[Course]:
     if course:
         for key, value in kwargs.items():
             if hasattr(course, key):
+                # Handle Enum conversion
+                if key == 'status' and isinstance(value, CourseStatus):
+                    value = value.value
                 setattr(course, key, value)
         db.commit()
         db.refresh(course)
