@@ -53,7 +53,7 @@ apiWithCookies.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axios.post('/api/auth/refresh', null, { withCredentials: true });
+        await axios.post(`${API_URL}/auth/refresh`, null, { withCredentials: true });
         processQueue(null);
         // Preserve the original responseType when retrying
         if (originalRequest.responseType) {
