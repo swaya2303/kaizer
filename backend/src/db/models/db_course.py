@@ -1,6 +1,6 @@
 import enum
 from sqlalchemy import Boolean, Column, Integer, String, Text, DateTime, ForeignKey, Enum, Index
-from sqlalchemy.dialects.mysql import LONGBLOB
+# Removed: from sqlalchemy.dialects.mysql import LONGBLOB (unused and not compatible with PostgreSQL)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from ...db.database import Base

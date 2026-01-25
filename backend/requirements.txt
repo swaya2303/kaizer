@@ -1,8 +1,8 @@
 fastapi==0.115.14
 uvicorn[standard]
 sqlalchemy~=2.0.41
-mysql-connector-python~=9.3.0
-aiomysql~=0.2.0
+psycopg2-binary~=2.9.9
+asyncpg~=0.30.0
 pydantic[email]
 python-jose[cryptography]
 passlib[bcrypt]~=1.7.4

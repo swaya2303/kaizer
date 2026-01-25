@@ -32,14 +32,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Create database tables with error handling
-# COMMENTED OUT: This was blocking server startup on Render
-# Tables will be created lazily on first database access
-# try:
-#     user_model.Base.metadata.create_all(bind=engine)
-#     logger.info("✅ Database tables created/verified successfully")
-# except Exception as e:
-#     logger.warning(f"⚠️ Could not create database tables on startup: {e}")
-#     logger.warning("This is normal if database is not yet accessible. Tables will be created on first connection.")
+try:
+    user_model.Base.metadata.create_all(bind=engine)
+    logger.info("✅ Database tables created/verified successfully")
+except Exception as e:
+    logger.warning(f"⚠️ Could not create database tables on startup: {e}")
+    logger.warning("Tables will be created on first database access.")
 
 # Create output directory for flashcard files
 output_dir = Path("/tmp/anki_output") if os.path.exists("/tmp") else Path("./anki_output")

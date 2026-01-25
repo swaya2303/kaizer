@@ -49,22 +49,20 @@ REFRESH_TOKEN_EXPIRE_MINUTES = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", "36
 SECURE_COOKIE = os.getenv("SECURE_COOKIE", "true").lower() == "true"
 
 
-# Database settings
-DB_USER = os.getenv("DB_USER", "your_db_user")
+# Database settings - Supabase PostgreSQL
+DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "your_db_password")
 DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "3306") # Default MySQL port
-DB_NAME = os.getenv("DB_NAME", "your_app_db")
+DB_PORT = os.getenv("DB_PORT", "5432")  # Default PostgreSQL port
+DB_NAME = os.getenv("DB_NAME", "postgres")
 
 # URL-encode credentials to handle special characters (e.g., @ in password)
 DB_USER_ENCODED = quote_plus(DB_USER)
 DB_PASSWORD_ENCODED = quote_plus(DB_PASSWORD)
 
-SQLALCHEMY_DATABASE_URL = f"mysql+mysqlconnector://{DB_USER_ENCODED}:{DB_PASSWORD_ENCODED}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{DB_USER_ENCODED}:{DB_PASSWORD_ENCODED}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # Async database URL for Google ADK (requires async driver)
-SQLALCHEMY_ASYNC_DATABASE_URL = f"mysql+aiomysql://{DB_USER_ENCODED}:{DB_PASSWORD_ENCODED}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-# For SQLite (testing): # SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-# For PostgreSQL: # SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+SQLALCHEMY_ASYNC_DATABASE_URL = f"postgresql+asyncpg://{DB_USER_ENCODED}:{DB_PASSWORD_ENCODED}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 # DB Pooling Settings
 DB_POOL_RECYCLE = int(os.getenv("DB_POOL_RECYCLE", 3600))

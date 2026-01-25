@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, String, Text, DateTime # Added Text and DateTime
 from datetime import datetime, timezone
 from ..database import Base
-from sqlalchemy.dialects.mysql import LONGTEXT
+# Removed: from sqlalchemy.dialects.mysql import LONGTEXT (unused and not compatible with PostgreSQL)
 from sqlalchemy.orm import relationship
 
 
