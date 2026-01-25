@@ -26,7 +26,7 @@ class Course(Base):
     user_id = Column(String(50), ForeignKey("users.id"), nullable=False, index=True)
     query = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    status = Column(Enum(CourseStatus), nullable=False, default=CourseStatus.CREATING)
+    status = Column(String(20), nullable=False, default=CourseStatus.CREATING.value) # Changed from Enum to String for compatibility
     total_time_hours = Column(Integer, nullable=False)
     language = Column(String(50), nullable=False)
     difficulty = Column(String(50), nullable=False)
