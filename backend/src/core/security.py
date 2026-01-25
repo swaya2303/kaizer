@@ -128,12 +128,15 @@ async def get_access_token_from_cookie(request: Request) -> Optional[str]:
     Or for future fallback mechanisms where the access token might be in a header or query parameter.
     """
     access_token = request.cookies.get("access_token")
+    
+    # DEBUG: Log cookie status for troubleshooting cross-domain issues
+    import logging
+    logger = logging.getLogger(__name__)
+    if access_token:
+        logger.info(f"🔑 Access token cookie FOUND (length: {len(access_token)})")
+    else:
+        logger.warning(f"⚠️ No access_token cookie! All cookies: {list(request.cookies.keys())}")
 
-    #if not access_token:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_401_UNAUTHORIZED,
-    #        detail="Not authenticated: Access token missing",
-    #    )
     return access_token
 
 async def get_refresh_token_from_cookie(request: Request) -> Optional[str]:
