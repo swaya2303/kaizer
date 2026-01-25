@@ -413,8 +413,8 @@ async def handle_oauth_callback(request: Request, db: Session, website: str = "g
         value=access_token,
         path="/",
         httponly=True,
-        secure=True,  # Must be True when samesite="none"
-        samesite="none"  # Required for cross-domain (Vercel frontend, Render backend)
+        secure=True,
+        samesite="lax"  # lax since Vercel proxy makes cookies first-party
     )
     # Set the refresh token in the redirect_response cookie
     redirect_response.set_cookie(
@@ -422,8 +422,8 @@ async def handle_oauth_callback(request: Request, db: Session, website: str = "g
         value=refresh_token,
         path="/api/auth/refresh",
         httponly=True,
-        secure=True,  # Must be True when samesite="none"
-        samesite="none"  # Required for cross-domain (Vercel frontend, Render backend)
+        secure=True,
+        samesite="lax"  # lax since Vercel proxy makes cookies first-party
     )
 
     return redirect_response

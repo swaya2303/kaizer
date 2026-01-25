@@ -1,8 +1,9 @@
 import axios from 'axios';
 
-// Use VITE_API_URL environment variable for production (Render backend)
-// Falls back to '/api' for local development with Vite proxy
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// IMPORTANT: Use '/api' not the direct backend URL!
+// Vercel rewrites in vercel.json proxy /api/* to the Render backend
+// This makes cookies FIRST-PARTY (same domain) avoiding browser blocking
+const API_URL = '/api';
 
 
 // --- Instanz mit Cookies (für Auth) ---

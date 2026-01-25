@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { apiWithCookies, apiWithoutCookies } from './baseApi';
 
-// Use VITE_API_URL for OAuth redirects (must go to actual backend, not Vercel)
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// Use /api - Vercel rewrites will proxy to Render backend (same-domain cookies)
+const API_URL = '/api';
 
 class AuthService {
   async login(username, password) {
