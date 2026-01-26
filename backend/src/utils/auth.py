@@ -52,18 +52,32 @@ async def get_current_active_user(access_token: Optional[str] = Depends(get_acce
             detail="Not authenticated: Access token missing",
         )
 
-    # Verify the token and extract user ID
-    user_id = security.verify_token(access_token)
+    try:
+        # Verify the token and extract user ID
+        user_id = security.verify_token(access_token)
+        print(f"DEBUG AUTH: Token verified for user_id: {user_id}")
 
-    # Fetch the user from the database using the user ID
-    user = get_active_user_by_id(db, user_id)
-
-    if user is None:
+        # Fetch the user from the database using the user ID
+        user = get_active_user_by_id(db, user_id)
+        
+        if user is None:
+            print(f"DEBUG AUTH: User ID {user_id} not found in DB")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
+        print(f"DEBUG AUTH: User found: {user.username}")
+        return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"ERROR AUTH: Crash in get_current_active_user: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-    )
-    return user
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Authentication Error: {str(e)}"
+        )
 
 
 async def get_current_user_optional(access_token: Optional[str] = Depends(get_access_token_from_cookie),
