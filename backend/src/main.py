@@ -4,23 +4,24 @@ import logging
 import secrets
 from typing import Optional
 
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Depends, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 from pathlib import Path
 import os
+from contextlib import asynccontextmanager
 
-from .api.routers import auth as auth_router
-from .api.routers import courses, files, users, statistics, questions
+# Import local modules
+from .api.routers import auth, users, courses, chat, questions, statistics, flashcard, files
 from .api.routers import notes
 #from .api.routers import notifications
-from .api.routers import chat
 from .api.routers import search as search_router
-from .api.routers import flashcard
 from .api.schemas import user as user_schema
-from .db.database import engine, SessionLocal
+from .db import database
+from .db.crud import users_crud
 from .db.models import db_user as user_model
 from .utils import auth
 
@@ -43,12 +44,30 @@ except Exception as e:
 output_dir = Path("/tmp/anki_output") if os.path.exists("/tmp") else Path("./anki_output")
 output_dir.mkdir(exist_ok=True)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Call the lifespan handler from core/lifespan.py
+    async with life_span_from_core(app):
+        yield
+
 # Create the main app instance
 app = FastAPI(
     title="User Management API",
-    root_path="/api",
-    lifespan=lifespan  # Use the lifespan context manager
+    description="API for managing users with authentication",
+    version="1.0.0",
+    lifespan=lifespan
 )
+
+# DEBUG MIDDLEWARE: Log every request
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(f"DEBUG MIDDLEWARE: Incoming request: {request.method} {request.url}")
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        print(f"ERROR MIDDLEWARE: Request crashed: {e}")
+        raise e
 
 
 app.add_middleware(
