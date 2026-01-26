@@ -165,6 +165,11 @@ async def get_user_courses(
     return course_service.get_user_courses( db, current_user.id, skip, limit)
 
 
+@router.get("/health")
+async def health_check():
+    """Health check for courses router"""
+    return {"status": "ok", "message": "Courses router is reachable"}
+
 @router.get("/{course_id}", response_model=CourseInfo)
 async def get_course_by_id(
         course_id: int,
