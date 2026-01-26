@@ -109,12 +109,13 @@ async def read_users_me(current_user: Optional[user_model.User] = Depends(auth.g
     return current_user
 
 # Include your existing routers under this api_router
+# Include your existing routers under this api_router
 app.include_router(users.router)
 app.include_router(courses.router)
 app.include_router(files.router)
-app.include_router(search_router.router)  # Add search router
+app.include_router(search.router)  # search_router -> search
 app.include_router(statistics.router)
-app.include_router(auth_router.api_router)
+app.include_router(auth.api_router) # auth_router -> auth
 app.include_router(notes.router)
 #app.include_router(notifications.router)
 app.include_router(questions.router)
