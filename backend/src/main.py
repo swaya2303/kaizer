@@ -23,7 +23,7 @@ from .api.schemas import user as user_schema
 from .db import database
 from .db.crud import users_crud
 from .db.models import db_user as user_model
-from .utils import auth
+from .utils import auth as auth_utils
 
 from .core.routines import update_stuck_courses
 from .config.settings import SESSION_SECRET_KEY
@@ -105,7 +105,7 @@ app.add_middleware(
 
 # Define /users/me BEFORE including users.router to ensure correct route matching
 @app.get("/users/me", response_model=Optional[user_schema.User], tags=["users"])
-async def read_users_me(current_user: Optional[user_model.User] = Depends(auth.get_current_user_optional)):
+async def read_users_me(current_user: Optional[user_model.User] = Depends(auth_utils.get_current_user_optional)):
     """Get the current logged-in user's details."""
     return current_user
 
