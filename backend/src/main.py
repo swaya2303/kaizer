@@ -27,7 +27,8 @@ from .utils import auth
 
 from .core.routines import update_stuck_courses
 from .config.settings import SESSION_SECRET_KEY
-from .core.lifespan import lifespan
+from .core.lifespan import lifespan as core_lifespan
+from .db.database import engine # Added engine import
 
 import logging
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ output_dir.mkdir(exist_ok=True)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Call the lifespan handler from core/lifespan.py
-    async with life_span_from_core(app):
+    async with core_lifespan(app):
         yield
 
 # Create the main app instance
@@ -109,11 +110,10 @@ async def read_users_me(current_user: Optional[user_model.User] = Depends(auth.g
     return current_user
 
 # Include your existing routers under this api_router
-# Include your existing routers under this api_router
 app.include_router(users.router)
 app.include_router(courses.router)
 app.include_router(files.router)
-app.include_router(search.router)  # search_router -> search
+app.include_router(search_router.router)  # search_router -> search
 app.include_router(statistics.router)
 app.include_router(auth.api_router) # auth_router -> auth
 app.include_router(notes.router)
