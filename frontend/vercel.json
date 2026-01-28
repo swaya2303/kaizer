@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://kaizer-backend.onrender.com/api/:path*"
+            "destination": "https://kaizer-tseb.onrender.com/api/:path*"
         }
     ]
 }
