@@ -4,7 +4,7 @@ import logging
 import secrets
 from typing import Optional
 
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -103,24 +103,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from fastapi import APIRouter
+
+# Create a main API router with the /api prefix
+api_router = APIRouter(prefix="/api")
+
 # Define /users/me BEFORE including users.router to ensure correct route matching
-@app.get("/users/me", response_model=Optional[user_schema.User], tags=["users"])
+# Note: Since this is attached to api_router, the full path will be /api/users/me
+@api_router.get("/users/me", response_model=Optional[user_schema.User], tags=["users"])
 async def read_users_me(current_user: Optional[user_model.User] = Depends(auth_utils.get_current_user_optional)):
     """Get the current logged-in user's details."""
     return current_user
 
-# Include your existing routers under this api_router
-app.include_router(users.router)
-app.include_router(courses.router)
-app.include_router(files.router)
-app.include_router(search_router.router)  # search_router -> search
-app.include_router(statistics.router)
-app.include_router(auth.api_router) # auth_router -> auth
-app.include_router(notes.router)
-#app.include_router(notifications.router)
-app.include_router(questions.router)
-app.include_router(chat.router)
-app.include_router(flashcard.router)
+# Include your existing routers into the main api_router
+api_router.include_router(users.router)
+api_router.include_router(courses.router)
+api_router.include_router(files.router)
+api_router.include_router(search_router.router)
+api_router.include_router(statistics.router)
+api_router.include_router(auth.api_router)
+api_router.include_router(notes.router)
+#api_router.include_router(notifications.router)
+api_router.include_router(questions.router)
+api_router.include_router(chat.router)
+api_router.include_router(flashcard.router)
+
+# Include the main api_router into the app
+app.include_router(api_router)
 
 # Mount static files for flashcard downloads
 app.mount("/output", StaticFiles(directory=str(output_dir)), name="output")
