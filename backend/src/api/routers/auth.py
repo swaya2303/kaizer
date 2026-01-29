@@ -101,6 +101,13 @@ async def login_google(request: Request):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Google OAuth client is not configured."
         )
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"DEBUG OAUTH: Initiating Google Login")
+    logger.info(f"DEBUG OAUTH: settings.GOOGLE_REDIRECT_URI = {settings.GOOGLE_REDIRECT_URI}")
+    masked_id = settings.GOOGLE_CLIENT_ID[:5] + "..." if settings.GOOGLE_CLIENT_ID else "NONE"
+    logger.info(f"DEBUG OAUTH: settings.GOOGLE_CLIENT_ID (masked) = {masked_id}")
+    
     return await oauth.google.authorize_redirect(request, settings.GOOGLE_REDIRECT_URI)
 
 
